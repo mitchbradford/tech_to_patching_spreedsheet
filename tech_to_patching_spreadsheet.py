@@ -43,11 +43,11 @@ def expand_string(s, list):
 # -----------------------------------------
 start_time = time.time()
 
-print("tech2xl v0.1")
+print("tech_to_patching_spreadsheet v1.0")
 
 # If user hasn't provided sufficent commands when running scripts, prompt
 if len(sys.argv) < 3:
-    print("Usage: tech2xl <output file> <input files>...")
+    print("Usage: tech_to_patching_spreadsheet <output file> <input files>...")
     sys.exit(2)
 
 commands = [["show"], \
@@ -86,7 +86,7 @@ intfields = ["Patch Panel / Device", \
             "Speed", \
             "Media type"]   
 
-diagfields = ["Name", "Slot", "Subslot", "Description", "Serial number", "Part number"]
+#diagfields = ["Name", "Slot", "Subslot", "Description", "Serial number", "Part number"]
 
 # takes all arguments starting from 2nd
 for arg in sys.argv[2:]:
@@ -135,8 +135,8 @@ for arg in sys.argv[2:]:
                 if name not in intinfo.keys():
                     intinfo[name] = collections.OrderedDict()
 
-                if name not in cdpinfo.keys():
-                    cdpinfo[name] = collections.OrderedDict()
+#                if name not in cdpinfo.keys():
+#                    cdpinfo[name] = collections.OrderedDict()
 
                 continue
 
@@ -168,8 +168,8 @@ for arg in sys.argv[2:]:
                         if name not in intinfo.keys():
                             intinfo[name] = collections.OrderedDict()
 
-                        if name not in cdpinfo.keys():
-                            cdpinfo[name] = collections.OrderedDict()
+#                        if name not in cdpinfo.keys():
+#                            cdpinfo[name] = collections.OrderedDict()
 
                     continue
 
@@ -343,152 +343,10 @@ for arg in sys.argv[2:]:
                         intinfo[name][item]['Duplex'] = m.group(4)
                         intinfo[name][item]['Speed'] = m.group(5)
                         intinfo[name][item]['Media type'] = m.group(6)
-                
-            # processes "show CDP neighbors" command or section of sh tech
-            if command == 'show cdp neighbors' and name != '':
-                # extracts information as per patterns
 
-                m = re.search("^([a-zA-Z0-9][a-zA-Z0-9_\-\.]*)$", line)
-                if m:
-                    if m.group(1) != "Capability" and m.group(1) != "Device":
-                        cdp_neighbor = m.group(1)
-                    continue
-
-                m = re.search("^                 (...) (\S+)", line)
-                if m and cdp_neighbor != '':
-
-                    local_int = expand(m.group(1), int_types) + m.group(2)
-                    remote_int_draft = line[68:-1]
-
-                    tmp = expand(remote_int_draft[:2], int_types)
-
-                    if tmp is not None:
-                        remote_int = tmp + remote_int_draft[3:].strip()
-                    else:
-                        remote_int = remote_int_draft
-                        
-                    if (name + local_int + remote_int) not in cdpinfo.keys():
-                        cdpinfo[name + local_int + remote_int] = collections.OrderedDict()
-                    
-                    if cdp_neighbor not in cdpinfo[name + local_int + remote_int].keys():
-                        cdpinfo[name + local_int + remote_int][cdp_neighbor] = collections.OrderedDict(zip(cdpfields, [''] * len(cdpfields)))
-                    
-                    cdpinfo[name + local_int + remote_int][cdp_neighbor]['Name'] = name
-
-            # processes "show inventory" command
-            if command == 'show inventory' and name != '':
-
-                # extracts information as per patterns
-                m = re.search('NAME: .* on Slot (\d+) SubSlot (\d+)\", DESCR: \"(.+)\"', line)
-                if m:
-                    slot = m.group(1)
-                    subslot = m.group(2)
-                    item = slot + '-' + subslot
-                    if (name + item) not in diaginfo.keys():
-                        diaginfo[name + item] = collections.OrderedDict(zip(diagfields, [''] * len(diagfields)))
-                    diaginfo[name + item]['Name'] = name
-                    diaginfo[name + item]['Slot'] = slot
-                    diaginfo[name + item]['Subslot'] = subslot
-                    diaginfo[name + item]['Description'] = m.group(3)
-
-                    continue
-                    
-                # extracts information as per patterns
-                m = re.search('NAME: .* on Slot (\d+)\", DESCR: \"(.+)\"', line)
-                if m:
-                    slot = m.group(1)
-                    subslot = ''
-                    item = slot
-                    if (name + item) not in diaginfo.keys():
-                        diaginfo[name + item] = collections.OrderedDict(zip(diagfields, [''] * len(diagfields)))
-                    diaginfo[name + item]['Name'] = name
-                    diaginfo[name + item]['Slot'] = slot
-                    diaginfo[name + item]['Subslot'] = subslot
-                    diaginfo[name + item]['Description'] = m.group(2)
-
-                    continue
-                    
-                m = re.search('PID: (.*)\s*, VID: .*, SN: (\S+)', line)
-                if m and item != '':
-                    diaginfo[name + item]['Name'] = name
-                    diaginfo[name + item]['Slot'] = slot
-                    diaginfo[name + item]['Subslot'] = subslot
-                    diaginfo[name + item]['Part number'] = m.group(1)
-                    diaginfo[name + item]['Serial number'] = m.group(2)
-
-                    continue
-
-
-            # processes "show diag" command
-            if command == 'show diag' and name != '':
-                # extracts information as per patterns
-                m = re.search("^(.*) EEPROM:$", line)
-                if m:
-                    slot = m.group(1)
-                    subslot = ''
-                    item = slot
-                    if (name + item) not in diaginfo.keys():
-                        diaginfo[name + item] = collections.OrderedDict(zip(diagfields, [''] * len(diagfields)))
-                    diaginfo[name + item]['Name'] = name
-                    diaginfo[name + item]['Slot'] = slot
-                    diaginfo[name + item]['Subslot'] = subslot
-                    
-                    continue
-
-                m = re.search("^Slot (\d+):$", line)
-                if m:
-                    slot = m.group(1)
-                    subslot = ''
-                    item = slot
-                    if (name + item) not in diaginfo.keys():
-                        diaginfo[name + item] = collections.OrderedDict(zip(diagfields, [''] * len(diagfields)))
-                    diaginfo[name + item]['Name'] = name
-                    diaginfo[name + item]['Slot'] = slot
-                    diaginfo[name + item]['Subslot'] = subslot
-                    take_next_line = 1
-                    
-                    continue
-
-                # submodules are showed indented from base modules                    
-                m = re.search("^\s.*Slot (\d+):$", line)
-                if m:
-                    subslot = m.group(1)
-                    item = slot + '-' + subslot
-                    if (name + item) not in cdpinfo.keys():
-                        diaginfo[name + item] = collections.OrderedDict(zip(diagfields, [''] * len(diagfields)))
-                    diaginfo[name + item]['Name'] = name
-                    diaginfo[name + item]['Slot'] = slot
-                    diaginfo[name + item]['Subslot'] = subslot
-                    take_next_line = 1
-
-                    continue
-                    
-                if take_next_line == 1:
-                    diaginfo[name + item]['Description'] = line.strip()
-                    take_next_line = 0
-                    continue
-                    
-                m = re.search("\s+Product \(FRU\) Number\s+: (.+)", line)
-                if m:
-                    diaginfo[name + item]['Part number'] = m.group(1)
-                    continue
-
-                m = re.search("\s+FRU Part Number\s+(.+)", line)
-                if m:
-                    diaginfo[name + item]['Part number'] = m.group(1)
-                    continue
-
-                m = re.search("\s+PCB Serial Number\s+: (.+)", line)
-                if m:
-                    diaginfo[name + item]['Serial number'] = m.group(1)
-                    continue
-
-                m = re.search("\s+Serial number\s+(\S+)", line)
-                if m:
-                    diaginfo[name + item]['Serial number'] = m.group(1)
-                    continue
 
 # Writes all the information collected
+# Formats header style
 style_header = xlwt.easyxf('pattern: pattern solid, fore_colour light_blue;'
                               'font: colour white, bold True;')
 
@@ -498,7 +356,7 @@ print(cont, " devices")
 
 if cont > 0:
 
-	# Create and populate Inventory XLS tab
+	# Writes Inventory tab
     wb = xlwt.Workbook()
     ws_system = wb.add_sheet('Inventory')
 
@@ -514,7 +372,7 @@ if cont > 0:
 
         row = row + 1
 
-    # Writes interface information
+    # Writes interface tab
     cont = 0
     for name in intinfo.keys():
         cont = cont + len(intinfo[name])
