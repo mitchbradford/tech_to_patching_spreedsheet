@@ -44,5 +44,5 @@ Initial Fork
 This project is licensed under the GNU General Public License v3.0.
 
 ## Acknowledgments
-*Originally forked from https://github.com/angonz/tech2xl by [Andres Gonzelez ] (https://github.com/angonz)
+* Originally forked from https://github.com/angonz/tech2xl by [Andres Gonzelez](https://github.com/angonz)
 
