@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------
 '''
 Script by Mitch Bradford
-Dependencies - Python 3, xlwt-future (https://pypi.python.org/pypi/xlwt-future)
+Dependencies - Python 3, xlwt
 
 Parses files containing one or more show tech of Cisco devices
 and extracts port information to an Excel file to assist in creating
@@ -10,7 +10,7 @@ port patching spreedsheets for switch replacements.
 You can put show tech of as many Cisco devices as you want in one file
 or you can have multiple files and use wildcards
 
-usage: python tech2xl <Excel output file> <input file 1> <input file 2> etc
+usage: python tech_to_patching_spreadsheet.py <Excel output file> <input file 1> <input file 2> etc or *.txt
 
 Credit to Andres Gonzelez for creating the original script
 https://github.com/angonz/tech2xl
