@@ -17,7 +17,7 @@ xlwt-future
 
 ### Installing
 
-Install the xlwt-future library
+Install the xlwt library
 
 ## Running the script
 ```
