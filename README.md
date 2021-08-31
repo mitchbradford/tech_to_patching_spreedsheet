@@ -24,7 +24,8 @@ Install the xlwt library
 git clone https://github.com/mitchbradford/tech_to_patching_spreedsheet.git
 cd tech_to_patching_spreadsheet
 ```
-Copy files containing a 'show tech' from cisco switches into the folder containing this script
+Copy files containing a 'show tech' from cisco switches into the folder containing this script.
+Script also supports wildcards such as *.txt for input files
 ```
 python tech_to_patching_spreadsheet <output_filename>.xls <input_file_1> <input_file_2> ... etc
 ```

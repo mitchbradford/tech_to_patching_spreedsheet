@@ -65,7 +65,7 @@ cdpinfo = collections.OrderedDict()
 diaginfo = collections.OrderedDict()
 
 #These are the fields to be extracted for the Inventory tab
-systemfields = ["Name", "Model", "System ID", "Image"]
+systemfields = ["Name", "Model", "System ID", "Image", "Uptime"]
 
 # Fields for Interfaces tab.  Commenting out excess noise
 intfields = ["Patch Panel / Device", \
@@ -273,6 +273,11 @@ for arg in sys.argv[2:]:
                     systeminfo[name]['Image'] = m.group(1)
                     continue
 
+                m = re.search(" uptime is (.*)", line)
+                if m:
+                    systeminfo[name]['Uptime'] = m.group(1)
+                    continue
+                    
             # processes "show interfaces" command or section of sh tech
             if command == 'show interfaces' and name != '':
                 # extracts information as per patterns
